@@ -11,24 +11,26 @@ icloud-snapshot is a utility to copy an icloud directory to a snapshot directory
 Documentation
 -------------
 
-    OVERVIEW: icloud-snapshot is a utility to copy an icloud directory to a
-    snapshot directory for archival purposes.
+```shell
+> icloud-snapshot --help
 
-    USAGE: i-cloud-snapshot <icloud_dir> <snapshot_dir> [--timecode_snapshot] [--overwrite_files] [--evict_files] [--skip_snapshot_files] [--debug]
+  OVERVIEW: icloud-snapshot is a utility to copy an icloud directory to a
+  snapshot directory for archival purposes.
 
-    ARGUMENTS:
-      <icloud_dir>            icloud directory
-      <snapshot_dir>          snapshot directory
+  USAGE: i-cloud-snapshot <icloud_dir> <snapshot_dir> [--timecode_snapshot] [--overwrite_files] [--evict_files] [--skip_snapshot_files] [--debug]
 
-    OPTIONS:
-      --timecode_snapshot     Timecode snapshot
-      --overwrite_files       Overwrite files
-      --evict_files           Evict files
-      --skip_snapshot_files   Skip snapshot files
-      --debug                 Debug information
-      -h, --help              Show help information.
-  
-  
+  ARGUMENTS:
+    <icloud_dir>            icloud directory
+    <snapshot_dir>          snapshot directory
+
+  OPTIONS:
+    --timecode_snapshot     Timecode snapshot
+    --overwrite_files       Overwrite files
+    --evict_files           Evict files
+    --skip_snapshot_files   Skip snapshot files
+    --debug                 Debug information
+    -h, --help              Show help information.
+``` 
   
 **iCloud and snapshot directories**
 
