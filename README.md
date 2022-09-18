@@ -34,23 +34,23 @@ Documentation
   
 **iCloud and snapshot directories**
 
-The icloud directory is typically found at **\<user path>/Library/Mobile Documents/com\~apple\~CloudDocs**, append an additional path if needed. The snapshot directory is where files will be copied to. Use the **--timecode_snapshot** flag to add append a timecode directory.
+The icloud directory is typically found at `\<user path>/Library/Mobile Documents/com\~apple\~CloudDocs`, append an additional path if needed. The snapshot directory is where files will be copied to. Use the **--timecode_snapshot** flag to add append a timecode directory.
 
 **Overwrite files**
 
-The overwrite_files flag will make sure files will be overwritten. If the **--timecode_snapshot** flag is not used the snapshot will try to overwrite existing files if exists.
+The overwrite_files flag will make sure files will be overwritten. If the `--timecode_snapshot` flag is not used the snapshot will try to overwrite existing files if exists.
 
 **Evict files**
 
-The **--evict_files** flag will remove all local files from the icloud directory before the snapshot runs. This is useful along with the **--skip_snapshot_files** flag if local copies should be removed from the icloud directory without creating a snapshot.
+The `--evict_files` flag will remove all local files from the icloud directory before the snapshot runs. This is useful along with the `--skip_snapshot_files` flag if local copies should be removed from the icloud directory without creating a snapshot.
 
 **Skip snapshot files**
 
-The **--skip_snapshot_files** will skip the snapshot creation, see evict files.
+The `--skip_snapshot_files` will skip the snapshot creation, see evict files.
 
 **Debug**
 
-The **--debug** flag will output debug information.
+The `--debug` flag will output debug information.
 
 **Other notes**
 
