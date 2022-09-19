@@ -70,7 +70,7 @@ The icloud-snapshot project uses Swift Packages, create a new package:
 > swift build --build-path build --configuration release --arch arm64 --arch x86_64
 > cp build/apple/Products/Release/icloud-snapshot ./icloud-snapshot_macOS12-<version>
 > cp README.md LICENSE ./icloud-snapshot_macOS12-<version>
-> tar -czf icloud-snapshot_macOS12<version>.tar.gz icloud-snapshot_macOS12<version>
+> tar -czf icloud-snapshot_macOS12-<version>.tar.gz icloud-snapshot_macOS12-<version>
 ```
 
 Web Resources
