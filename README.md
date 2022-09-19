@@ -66,10 +66,11 @@ Packaging
 The icloud-snapshot project uses Swift Packages, create a new package:
 
 ```shell
-> mkdir icloud-snapshot_macOS12-arm64-<version>
-> swift build --build-path build --configuration release
-> cp build/release/icloud-snapshot ./icloud-snapshot_macOS12-arm64-<version>
-> tar -czf icloud-snapshot_macOS12-arm64<version>.tar.gz icloud-snapshot_macOS12-arm64<version>
+> mkdir icloud-snapshot_macOS12-<version>
+> swift build --build-path build --configuration release --arch arm64 --arch x86_64
+> cp build/apple/Products/Release/icloud-snapshot ./icloud-snapshot_macOS12-<version>
+> cp README.md LICENSE ./icloud-snapshot_macOS12-<version>
+> tar -czf icloud-snapshot_macOS12<version>.tar.gz icloud-snapshot_macOS12<version>
 ```
 
 Web Resources

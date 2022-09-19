@@ -14,6 +14,7 @@ import ArgumentParser
 
 // icloud flags
 var icloud_overwrite = false
+var icloud_notsupported = [URL]()
 
 // debug flags
 var debug_output = false
@@ -73,7 +74,6 @@ func url_to_path(url: URL) -> String {
 func icloud_evict_file(evict_url: URL)
 {
     info_print(message: "evict file: \(url_to_path(url: evict_url))");
-    
     do
     {
         let resources = try evict_url.resourceValues(forKeys: [.isUbiquitousItemKey, .ubiquitousItemDownloadingStatusKey])
@@ -156,92 +156,101 @@ func icloud_copy_file(copy_url: URL, snapshot_url: URL)
     }
     catch
     {
-        error_print(message: "could not snapshot file: \(url_to_path(url: snapshot_url)) error: \(error)")
+        error_print(message: "could not copy file: \(url_to_path(url: snapshot_url)) error: \(error)")
     }
 }
 
 func icloud_snapshot_file(copy_url: URL, snapshot_url: URL)
 {
-    info_print(message: "snapshot file: \(url_to_path(url: copy_url))");
-    
+    info_print(message: "snapshot file: \(url_to_path(url: copy_url))")
     let copy_file = copy_url.lastPathComponent
     do
     {
         let resources = try copy_url.resourceValues(forKeys: [.isUbiquitousItemKey, .ubiquitousItemDownloadingStatusKey])
         if resources.isUbiquitousItem ?? true {
-                       
-            if resources.ubiquitousItemDownloadingStatus != .current {
-                info_print(message: "- download file: \(url_to_path(url: copy_url))")
                 
-                // name local copy
-                let copy_dir = copy_url.deletingLastPathComponent()
-                var local_file = copy_file
-                
-                // remove initial "." and ending ".icloud" from result
-                local_file.removeFirst()
-                local_file = local_file.replacingOccurrences(of: ".icloud", with: "")
-                
-                let copy_local_url = copy_dir.appendingPathComponent(local_file)
-                
-                // name snapshot copy
-                let snapshot_file_url = snapshot_url.appendingPathComponent(copy_local_url.lastPathComponent)
-                if (!FileManager.default.fileExists(atPath: snapshot_file_url.path)) {
+            if (!copy_file.starts(with: ".."))
+            {
+                if resources.ubiquitousItemDownloadingStatus != .current {
                     
-                    do {
+                    info_print(message: "- download file: \(url_to_path(url: copy_url))")
+                    
+                    // name local copy
+                    let copy_dir = copy_url.deletingLastPathComponent()
+                    var local_file = copy_file
+                    
+                    // remove initial "." and ending ".icloud" from result
+                    local_file.removeFirst()
+                    local_file = local_file.replacingOccurrences(of: ".icloud", with: "")
+                    
+                    let copy_local_url = copy_dir.appendingPathComponent(local_file)
+                    
+                    // name snapshot copy
+                    let snapshot_file_url = snapshot_url.appendingPathComponent(copy_local_url.lastPathComponent)
+                    if (!FileManager.default.fileExists(atPath: snapshot_file_url.path)) {
                         
-                        // download local copy
-                        try FileManager.default.startDownloadingUbiquitousItem(at: copy_url)
-
-                        // wait for completition
-                        var downloaded = false
-                        while (!downloaded) {
+                        do {
                             
-                            do {
-                                // A new URL needs to be created to force complete
-                                // reload of resoure values between calls.
-                                let resouces_local_url = URL(fileURLWithPath: copy_local_url.path)
-                                let download_resources = try resouces_local_url.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey])
-                                if download_resources.ubiquitousItemDownloadingStatus == .current {
+                            // download local copy
+                            try FileManager.default.startDownloadingUbiquitousItem(at: copy_url)
+
+                            // wait for completition
+                            var downloaded = false
+                            while (!downloaded) {
+                                
+                                do {
+                                    // A new URL needs to be created to force complete
+                                    // reload of resoure values between calls.
+                                    let resouces_local_url = URL(fileURLWithPath: copy_local_url.path)
+                                    let download_resources = try resouces_local_url.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey])
+                                    if download_resources.ubiquitousItemDownloadingStatus == .current {
+                                        
+                                        info_print(message: "- download complete: \(url_to_path(url: resouces_local_url))")
+                                        downloaded = true
+                                        break;
+                                    }
                                     
-                                    info_print(message: "- download complete: \(url_to_path(url: resouces_local_url))")
-                                    downloaded = true
-                                    break;
+                                } catch {
+                                    error_print(message: "- could not request download status for file: \(url_to_path(url: copy_local_url)) error: \(error)")
                                 }
                                 
-                            } catch {
-                                error_print(message: "- could not request download status for file: \(url_to_path(url: copy_local_url)) error: \(error)")
+                                Thread.sleep(forTimeInterval: 0.5)
                             }
+
+                            info_print(message: "- copy file: \(url_to_path(url: copy_local_url))")
                             
-                            Thread.sleep(forTimeInterval: 0.5)
-                        }
-
-                        info_print(message: "- copy file: \(url_to_path(url: copy_local_url))")
+                            // snapshot local file
+                            icloud_copy_file(copy_url: copy_local_url, snapshot_url: snapshot_file_url)
                         
-                        // snapshot local file
-                        icloud_copy_file(copy_url: copy_local_url, snapshot_url: snapshot_file_url)
-                    
-                        // remove file
-                        info_print(message: "- remove download file: \(url_to_path(url: copy_local_url))")
-                        icloud_evict_file(evict_url: copy_local_url)
-                               
-                    } catch {
-                        error_print(message: "- could not download file: \(url_to_path(url: copy_url)) error: \(error)")
+                            // remove file
+                            info_print(message: "- remove download file: \(url_to_path(url: copy_local_url))")
+                            icloud_evict_file(evict_url: copy_local_url)
+                                   
+                        } catch {
+                            error_print(message: "- could not download file: \(url_to_path(url: copy_url)) error: \(error)")
+                        }
                     }
-                }
-                else
-                {
-                    info_print(message: "file exists: \(url_to_path(url: snapshot_url)) will be skipped")
-                }
+                    else
+                    {
+                        info_print(message: "file exists: \(url_to_path(url: snapshot_url)) will be skipped")
+                    }
 
-            } else {
-                info_print(message: "- local file exists: \(url_to_path(url: copy_url))")
-                info_print(message: "- snapshot file: \(url_to_path(url: copy_url))")
+                } else {
+                    info_print(message: "- local file exists: \(url_to_path(url: copy_url))")
+                    info_print(message: "- snapshot file: \(url_to_path(url: copy_url))")
+                    
+                    // copy local file
+                    let snapshot_file_url = snapshot_url.appendingPathComponent(copy_file)
+                    icloud_copy_file(copy_url: copy_url, snapshot_url: snapshot_file_url)
+                }
                 
-                // copy local file
-                let snapshot_file_url = snapshot_url.appendingPathComponent(copy_file)
-                icloud_copy_file(copy_url: copy_url, snapshot_url: snapshot_file_url)
             }
-            
+            else
+            {
+                info_print(message: "- file starts with '..': \(url_to_path(url: copy_url)), will be skipped")
+                icloud_notsupported.append(copy_url)
+            }
+                
         } else {
             
             info_print(message: "- local file exists: \(url_to_path(url: copy_url))")
@@ -320,9 +329,17 @@ struct iCloudSnapshot: ParsableCommand {
         
         // icloud dir
         let icloud_url = URL(fileURLWithPath: icloud_dir)
+        if (!FileManager.default.fileExists(atPath: icloud_url.path)) {
+            error_print(message: ("icloud directory: \(url_to_path(url: icloud_url)) does not exist"))
+            return
+        }
         
         // snapshot dir
         var snapshot_url = URL(fileURLWithPath: snapshot_dir)
+        if (!FileManager.default.fileExists(atPath: snapshot_url.path)) {
+            error_print(message: ("snapshot directory: \(url_to_path(url: snapshot_url)) does not exist"))
+            return
+        }
         
         if (timecode_snapshot) {
             let date_formatter = DateFormatter()
@@ -349,6 +366,14 @@ struct iCloudSnapshot: ParsableCommand {
         if (!skip_snapshot_files) {
             // snapshot files
             icloud_snapshot_url(copy_url: icloud_url, snapshot_url: snapshot_url)
+        }
+        
+        // not supported
+        if (icloud_notsupported.count > 0) {
+            info_print(message: ("snapshot icloud files not supported:"))
+            icloud_notsupported.forEach { file in
+                info_print(message: ("  \(file)"))
+            }
         }
 
         // end
