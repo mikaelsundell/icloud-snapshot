@@ -58,7 +58,9 @@ If the snapshot is created while the computer is locked make sure you prevent it
 
 **Limitations**
 
-Currently files starting with a `..` is not supported and will cause the APIs to fail. Such files are reported at the end of icloud-snapshot. At all times watch out for progress next to the icloud icon in the finder side view, in rare cases the icloud daemon fails to sync and will stall.
+Currently files starting with a `..` is not supported and will cause the icloud api's to fail. Such files are reported at the end of icloud-snapshot run. At all times watch out for the progress next to the icloud icon in the finder side view, in rare cases the icloud daemon fails to sync and will stall the process.
+
+The Security & Privacy settings needs to Allow icloud-snapshot, after first download open the panel in System Preferences and click Allow.
   
 Packaging
 ---------
