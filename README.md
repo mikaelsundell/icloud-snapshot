@@ -34,7 +34,7 @@ Documentation
   
 **iCloud and snapshot directories**
 
-The icloud directory is typically found at `<user path>/Library/Mobile Documents/com~apple~CloudDocs`, append an additional path if needed. The snapshot directory is where files will be copied to. Use the **--timecode_snapshot** flag to add append a timecode directory.
+The icloud directory is typically found at `<user path>/Library/Mobile Documents/com~apple~CloudDocs`, append an additional path if needed. The snapshot directory is where files will be copied to. Use the `--timecode_snapshot` flag to add append a timecode directory.
 
 **Overwrite files**
 
