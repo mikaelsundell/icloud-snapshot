@@ -64,7 +64,29 @@ Security & Privacy
 ------------------
 
 The `Security & Privacy` settings needs to Allow icloud-snapshot, after first download open the panel in System Preferences and click Allow.
+
   
+Examples
+--------
+
+Make an icloud snapshot of all files to a local drive mounted as Backup:
+
+```shell
+> ./icloud-snapshot <user directory>/Library/Mobile Documents/com~apple~CloudDocs /Volumes/Backup
+```
+
+Make an icloud snapshot and append a time code:
+
+```shell
+> ./icloud-snapshot <user directory>/Library/Mobile Documents/com~apple~CloudDocs /Volumes/Backup  --timecode_snapshot
+```
+
+Evict all files (remove local copies) without making a backup
+
+```shell
+> ./icloud-snapshot <user directory>/Library/Mobile Documents/com~apple~CloudDocs /Volumes/Backup  --evict_files --skip_snapshot_files
+```
+
 Packaging
 ---------
 
