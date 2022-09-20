@@ -38,11 +38,11 @@ The icloud directory is typically found at `<user path>/Library/Mobile Documents
 
 **Overwrite files**
 
-The overwrite_files flag will make sure files will be overwritten. If the `--timecode_snapshot` flag is not used the snapshot will try to overwrite existing files if exists.
+The overwrite_files flag will make sure files are overwritten. If the `--timecode_snapshot` is used a unique time coded directory will be created an no files need to be overwritten.
 
 **Evict files**
 
-The `--evict_files` flag will remove all local files from the icloud directory before the snapshot runs. This is useful along with the `--skip_snapshot_files` flag if local copies should be removed from the icloud directory without creating a snapshot.
+The `--evict_files` flag will remove all local files stored in the icloud directory. This is useful combined with the `--skip_snapshot_files` flag to free up disk space without making a new snapshot.
 
 **Skip snapshot files**
 
@@ -52,13 +52,13 @@ The `--skip_snapshot_files` will skip the snapshot creation, see evict files.
 
 The `--debug` flag will output debug information.
 
-**Other notes**
+**Energy Saver**
 
 If the snapshot is created while the computer is locked make sure you prevent it from sleeping, see `Prevent your Mac from automatically sleeping when display is off` checkbox in Energy Saver panel in System Preferences.
 
 **Limitations**
 
-Currently files starting with a `..` is not supported and will cause the icloud api's to fail. Such files are reported at the end of icloud-snapshot run. At all times watch out for the progress next to the icloud icon in the finder side view, in rare cases the icloud daemon fails to sync and will stall the process.
+Currently files starting with `..` are not supported and will cause the icloud api calls to fail. Such files are reported at the end of icloud-snapshot run. At all times watch out for the progress next to the icloud icon in the finder sidebar, in rare cases the icloud daemon fails to sync and will stall the process.
 
 Security & Privacy
 ------------------
@@ -72,19 +72,19 @@ Examples
 Make an icloud snapshot of all files to a local drive mounted as Backup:
 
 ```shell
-> ./icloud-snapshot <user directory>/Library/Mobile Documents/com~apple~CloudDocs /Volumes/Backup
+> ./icloud-snapshot <user path>/Library/Mobile Documents/com~apple~CloudDocs /Volumes/Backup
 ```
 
 Make an icloud snapshot and append a time code:
 
 ```shell
-> ./icloud-snapshot <user directory>/Library/Mobile Documents/com~apple~CloudDocs /Volumes/Backup  --timecode_snapshot
+> ./icloud-snapshot <user path>/Library/Mobile Documents/com~apple~CloudDocs /Volumes/Backup  --timecode_snapshot
 ```
 
 Evict all files (remove local copies) without making a backup
 
 ```shell
-> ./icloud-snapshot <user directory>/Library/Mobile Documents/com~apple~CloudDocs /Volumes/Backup  --evict_files --skip_snapshot_files
+> ./icloud-snapshot <user path>/Library/Mobile Documents/com~apple~CloudDocs /Volumes/Backup  --evict_files --skip_snapshot_files
 ```
 
 Packaging
