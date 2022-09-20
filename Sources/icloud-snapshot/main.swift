@@ -371,8 +371,8 @@ struct iCloudSnapshot: ParsableCommand {
         // not supported
         if (icloud_notsupported.count > 0) {
             info_print(message: ("snapshot icloud files not supported:"))
-            icloud_notsupported.forEach { file in
-                info_print(message: ("  \(file)"))
+            icloud_notsupported.forEach { file_url in
+                info_print(message: ("  \(file_url.path)"))
             }
         }
 
