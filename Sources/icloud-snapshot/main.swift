@@ -171,7 +171,10 @@ func icloud_snapshot_file(copy_url: URL, snapshot_url: URL)
                 
             if (!copy_file.starts(with: ".."))
             {
-                if resources.ubiquitousItemDownloadingStatus != .current {
+                // test downloading status, if null it's typically a file part
+                // of a package and is already available for copy
+                if resources.ubiquitousItemDownloadingStatus != nil &&
+                   resources.ubiquitousItemDownloadingStatus != .current {
                     
                     info_print(message: "- download file: \(url_to_path(url: copy_url))")
                     
@@ -196,34 +199,57 @@ func icloud_snapshot_file(copy_url: URL, snapshot_url: URL)
 
                             // wait for completition
                             var downloaded = false
+                            var isfile = true
                             while (!downloaded) {
                                 
                                 do {
-                                    // A new URL needs to be created to force complete
+                                    // a new URL needs to be created to force complete
                                     // reload of resoure values between calls.
                                     let resouces_local_url = URL(fileURLWithPath: copy_local_url.path)
+
                                     let download_resources = try resouces_local_url.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey])
                                     if download_resources.ubiquitousItemDownloadingStatus == .current {
+                                                                                
+                                        // check if download is file or package - isRegularFileKey throws exception if requested
+                                        // when download is not complete.
+                                        let file_resources = try resouces_local_url.resourceValues(forKeys: [.isRegularFileKey])
+                                        if file_resources.isRegularFile ?? true
+                                        {
                                         
-                                        info_print(message: "- download complete: \(url_to_path(url: resouces_local_url))")
-                                        downloaded = true
-                                        break;
+                                            info_print(message: "- download complete: \(url_to_path(url: resouces_local_url))")
+                                            downloaded = true
+                                            break;
+                                            
+                                        } else {
+                                            
+                                            info_print(message: "- download is package: \(url_to_path(url: resouces_local_url))")
+                                            isfile = false;
+                                            break;
+                                        
+                                        }
                                     }
-                                    
+  
                                 } catch {
                                     error_print(message: "- could not request download status for file: \(url_to_path(url: copy_local_url)) error: \(error)")
                                 }
-                                
                                 Thread.sleep(forTimeInterval: 0.5)
                             }
 
-                            info_print(message: "- copy file: \(url_to_path(url: copy_local_url))")
+                            if (isfile)
+                            {
+                                info_print(message: "- copy file: \(url_to_path(url: copy_local_url))")
+                                
+                                // snapshot local file
+                                icloud_copy_file(copy_url: copy_local_url, snapshot_url: snapshot_file_url)
                             
-                            // snapshot local file
-                            icloud_copy_file(copy_url: copy_local_url, snapshot_url: snapshot_file_url)
-                        
-                            // remove file
-                            info_print(message: "- remove download file: \(url_to_path(url: copy_local_url))")
+                                // remove file
+                                info_print(message: "- remove download file: \(url_to_path(url: copy_local_url))")
+                            }
+                            else
+                            {
+                                // copy dir
+                                icloud_snapshot_url(copy_url: copy_local_url, snapshot_url: snapshot_file_url)
+                            }
                             icloud_evict_file(evict_url: copy_local_url)
                                    
                         } catch {
